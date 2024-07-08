@@ -30,6 +30,36 @@ def test_add_new_user(setup_database):
     user = cursor.fetchone()
     assert user, "Пользователь должен быть добавлен в базу данных."
 
+def test_add_existing_user(setup_database):
+    first_try = add_user('admin', 'tsetyn@example.com', 'password123123')
+    second_try = add_user('admin', 'tsety1@example.com', 'anotherpassword123')
+    assert first_try == True, "Пользователь должен быть добавлен при первом добавлении."
+    assert second_try == False, "Добавление пользователя с существующим логином должно вернуть False."
+
+def test_authenticate_user(setup_database):
+    add_user('testerr', 'testy@example.com', 'password123')
+    authenticated = authenticate_user('testerr', 'password123')
+    assert authenticated == True, "Должна быть успешная аутентификация с правильным логином и паролем."
+
+def test_authenticate_nonexistent_user(setup_database):
+    authenticated = authenticate_user('nonexistent', 'password123456')
+    assert authenticated == False, "Должна быть неуспешная аутентификация."
+
+def test_authenticate_user_wrong_password(setup_database):
+    add_user('testerry', 'testy@example.com', 'password123')
+    authenticated = authenticate_user('testerry', 'password1234590')
+    assert authenticated == False, "Должна быть неуспешная аутентификация."
+
+def test_list_show(setup_database):
+    add_user('testuser', 'testuser@example.com', 'password123')
+    add_user('testuser2', 'testuser2@example.com', 'password1234')
+    add_user('testuser3', 'testuser3@example.com', 'password12345')
+    display_users()
+    print(display_users())
+    b=[[i] for i in display_users()]
+    assert len(b()) == 3, "Должно быть отображено 3" 
+
+
 # Возможные варианты тестов:
 """
 Тест добавления пользователя с существующим логином.
